@@ -1,0 +1,21 @@
+services:
+  - type: web
+    name: phone-trace-backend
+    env: python
+    buildCommand: pip install -r backend/requirements.txt
+    startCommand: gunicorn --bind 0.0.0.0:$PORT backend/app:app
+    envVars:
+      - key: NUMVERIFY_KEY
+        sync: false
+      - key: IPQUALITY_KEY
+        sync: false
+
+  - type: web
+    name: phone-trace-frontend
+    env: static
+    buildCommand: cd frontend && npm install && npm run build
+    publishDir: frontend/build
+    envVars:
+      - key: REACT_APP_API_URL
+        value: ${phone-trace-backend.url}/api
+        sync: false
